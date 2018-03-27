@@ -27,11 +27,6 @@ for i in range(0,len(hi_knots)):
 	str_eta = str_eta + '\t\t' + eta[i] + '\n'
 	str_theta = str_theta + '\t\t' + theta[i] + '\n'
 
-
-
-
-
-
 # Rewrite model as strings in APMonitor style --->
 # variables
 str_variables = ''
