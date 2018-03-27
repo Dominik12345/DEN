@@ -9,7 +9,7 @@ from simulation_model import *
 # solve and compute observations
 solution = odeint(equations, x0, time)
 
-data = [ [-1 , -1 , -1, -1] ]
+data = [[-1] * (len(observation(x0))+2)]
 for i in range(0,len(solution)-1):
 	data.append([time[i]] + observation(solution[i]) + [0] )
 data.append([time[len(solution)-1]] + observation(solution[ len(solution)-1 ]) + [1])

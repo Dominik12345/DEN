@@ -11,7 +11,7 @@ x0 = [1.,2.,4.]
 
 time = np.linspace(0,10)
 
-head = 'time, y1obs, y2obs, last\n'
+head = 'time, y1obs, last\n'
 
 def observation(x):
 	y1 = x[0] + x[1]
