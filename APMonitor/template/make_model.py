@@ -62,7 +62,7 @@ str_objective = ''
 for i in range(0,len(measurements)):
 	str_objective = str_objective +'(' + measurements[i] +' - ' + list(observables.keys())[i] +')**2 + '
 for i in range(0,len(hi)):
-	str_objective = (str_objective + 'alpha2/2. * ' + '(' + hi[i] + ')**2' )  
+	str_objective = (str_objective + 'alpha2/2. * ' + '(' + hi[i] + ')**2 + ' + 'alpha1 * ' +'abs('+ hi[i]+')')  
 	if i != (len(hi)-1):
 		str_objective = str_objective + ' + '
 #+ 'alpha1 * ' +'abs('+ hi[i]+')' +' + ' L1
