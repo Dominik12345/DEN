@@ -1,17 +1,21 @@
 # Setup --->
 import numpy as np
+import random
 import csv
 from scipy.integrate import odeint
 from simulation_model import *
 
 # <--- Setup
+#set random seed for data noise
+random.seed(1)
 
 # solve and compute observations
 solution = odeint(equations, x0, time)
 
-data = [[-1] * (len(observation(x0))+2)]
+data = [ [-1] * (len(observation(x0)) + 2 )  ]
 for i in range(0,len(solution)-1):
-	data.append([time[i]] + observation(solution[i]) + [0] )
+	temp = observation(solution[i])
+	data.append([time[i]] + temp + [0] )
 data.append([time[len(solution)-1]] + observation(solution[ len(solution)-1 ]) + [1])
 
 # save

@@ -12,8 +12,8 @@ parameters = {	'a1' : 0.2 ,
 		'b2' : 0.2 ,
 		'b3' : 0.1 ,
 
-		'alpha1': 0.1, # L1 regularisation
-		'alpha2': 0.1   # L2 regularisation
+		'alpha1': 0.3 , # L1 regularisation
+		'alpha2': 0.3   # L2 regularisation
 }
 
 # Declare variables and inital values
@@ -32,7 +32,7 @@ equations = {	'dx1' : '-a1 * x1 + b3 * x3' ,
 
 # Define Observables
 
-observables = { 'y1' : 'x1 +  x2' ,
-		'y2' : 'x2 +  x3'
+observables = { 'y1' : 'x1 ' ,
+		'y2' : 'x2 '
 }  
 

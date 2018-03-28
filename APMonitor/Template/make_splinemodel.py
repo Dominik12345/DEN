@@ -11,6 +11,21 @@ if max(hi_knots) > len(variables):
 	print('problem: hidden input on nonexisting knot')
 	quit()
 
+# make list of xi, eta, theta (hidden inputs)
+xi = []
+eta = []
+theta = []
+str_xi = ''
+str_eta = ''
+str_theta = ''
+
+for i in range(0,len(hi_knots)):
+	xi.append('xi'+ str(i+1))
+	eta.append('eta'+ str(i+1))
+	theta.append('theta'+ str(i+1))
+	str_xi = str_xi + '\t\t' + xi[i] + '\n' # + ' = ' + xi[i] + 'Init\n'
+	str_eta = str_eta + '\t\t' + eta[i] + '\n'# + ' = ' + eta[i] + 'Init\n'
+	str_theta = str_theta + '\t\t' + theta[i] + '\n'
 
 # Rewrite model as strings in APMonitor style --->
 # variables
@@ -24,8 +39,15 @@ str_parameters = ''
 for i in range(0,len(parameters)-2):
 	str_parameters = ( str_parameters + '\t\t' + list(parameters.keys())[i] + ' = ' + 
 	str(list(parameters.values())[i]) +'\n' )
+# augmented states initial
+str_auginit = ''
+for i in range(0,len(xi)):
+	str_auginit = str_auginit + '\t\t' + xi[i] + 'Init\n'
+	str_auginit = str_auginit + '\t\t' + eta[i] + 'Init\n'
 
-str_parameters = str_parameters + '\n\t\t!apm stuff\n\t\t'+list(parameters.keys())[len(parameters)-2] + ' = ' + str(list(parameters.values())[len(parameters)-2])+ '\n\t\t' +list(parameters.keys())[len(parameters)-1] + ' = ' + str(list(parameters.values())[len(parameters)-1])
+
+# add regularization constants
+str_const = '\t\t' + list(parameters.keys())[len(parameters)-2] + ' = ' + str(list(parameters.values())[len(parameters)-2])+ '\n\t\t' +list(parameters.keys())[len(parameters)-1] + ' = ' + str(list(parameters.values())[len(parameters)-1]) + '\n'
 
 # observables y
 str_observables = ''
@@ -39,13 +61,6 @@ for i in range(0,len(observables)):
 	measurements.append('y' + str(i+1) + 'obs') 
 	str_measurements = (str_measurements + '\t\t' + measurements[i] + '\n')
 
-#  hi (hidden inputs)
-hi = []
-str_hi = ''
-for i in range(0,len(hi_knots)):
-	hi.append('w'+ str(i+1))
-	str_hi = str_hi + '\t\t' + hi[i] + '\n'
-
 # equations
 str_equations = ''
 tempcount = 0
@@ -53,26 +68,33 @@ for i in range(0,len(equations)):
 	str_equations = ( str_equations + '\t\t' + list(equations.keys())[i] + ' = ' + 
 	str(list(equations.values())[i]) )
 	if tempcount < len(hi_knots) and hi_knots[tempcount] == (i+1):
-		str_equations = str_equations + ' + ' + hi[tempcount]
+		str_equations = str_equations + ' + ' + xi[tempcount]
 		tempcount = tempcount + 1
 	str_equations = str_equations + '\n'
+
+# augmented equations
+str_equations = str_equations + '\n'
+for i in range(0,len(hi_knots)):
+	str_equations = str_equations + '\t\t' + 'd' + xi[i] + ' = ' + eta[i] + '\n'
+	str_equations = str_equations + '\t\t' + 'd' + eta[i] + ' = ' + theta[i] + '\n'
 
 # objective function
 str_objective = ''
 for i in range(0,len(measurements)):
 	str_objective = str_objective +'(' + measurements[i] +' - ' + list(observables.keys())[i] +')**2 + '
-for i in range(0,len(hi)):
-	str_objective = (str_objective + 'alpha2/2. * ' + '(' + hi[i] + ')**2 + ' + 'alpha1 * ' +'abs('+ hi[i]+')')  
-	if i != (len(hi)-1):
+for i in range(0,len(xi)):
+	str_objective = (str_objective + 'alpha1 * ' + 'abs(' + xi[i] + ') + '+ 'alpha2/2. * ' + '(' + theta[i] + ')**2')   
+	if i != (len(xi)-1):
 		str_objective = str_objective + ' + '
-#+ 'alpha1 * ' +'abs('+ hi[i]+')' +' + ' L1
 
 # concatenate strings
-write_parameters = (str_parameters + '\n\t\tlast\n' + str_measurements + str_hi) 
+write_const = str_const
+
+write_parameters = (str_parameters + '\n\t\tlast\n' + str_measurements + str_theta)# + str_auginit
 
 write_equations = '\t\tminimize last * J\n' + '\t\tdJ = ' + str_objective+ '\n\n' + str_equations + '\n' + str_observables 
 
-write_variables = '\t\tJ = 0\n\n' + str_variables + '\n' + str_observables
+write_variables = '\t\tJ = 0\n\n\t\t!state variables\n' + str_variables + '\t\t!augmented states\n'+ str_xi + str_eta + '\t\t!observables\n' +  str_observables
 
 # <--- Rewrite model as strings in APMonitor style
 
@@ -81,6 +103,8 @@ modelfile = open('model.apm','w')
 
 # write model into file 
 modelfile.write('Model\n\n')
+modelfile.write('\tConstants\n' + write_const + '\tEnd Constants')
+modelfile.write('\n\n')
 modelfile.write('\tParameters\n' + write_parameters + '\tEnd Parameters')
 modelfile.write('\n\n')
 modelfile.write('\tVariables\n' + write_variables + '\tEnd Variables')
@@ -104,6 +128,9 @@ with open('model.apm', 'r') as file :
 # Replace the target string
 filedata = filedata.replace('dx', '$x')
 filedata = filedata.replace('dJ', '$J')
+filedata = filedata.replace('dxi', '$xi')
+filedata = filedata.replace('deta', '$eta')
+
 # Write the file out again
 with open('model.apm', 'w') as file:
   file.write(filedata)
