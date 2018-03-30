@@ -1,26 +1,21 @@
 import numpy as np
-import random
 
 def equations(x,t):
-	dx1 = -0.2 * x[0] + 0.1 * x[2] + np.cos(t)
-	dx2 = -0.2 * x[1] + 0.1 * x[0] + np.exp(-0.1*t)+ 0.01
-	dx3 = -0.2 * x[2] + 0.2 * x[1] 
+   dx1 = -0.1 * x[0] + 0.2 * x[3] + 1/(1+(t-5)**2)
+   dx2 = -0.1 * x[1] + 0.2 * x[0] 
+   dx3 = -0.1 * x[2] + 0.2 * x[1] + np.arctan(t)
+   dx4 = -0.1 * x[3] + 0.2 * x[2]
 	
-	return([dx1,dx2,dx3])
+   return([dx1,dx2,dx3,dx4])
 
-x0 = [1.,2.,4.]
+x0 = [1.,0.01,0.01,0.01]
 
-time = np.linspace(0,100, num = 1e3)
+time = np.linspace(0,10)
 
-head = 'time, y1obs, y2obs, last\n'
-
+head = 'time, y1obs, y2obs, y3obs, last\n'
 
 def observation(x):
-	y1 = x[0]
-	y2 = x[1] 
-	# noisy
-	y1noisy = y1 + 0.1 * y1 * random.random()
-	y2noisy = y2 + 0.1 * y2 * random.random()
-
-#	return([y1,y2])
-	return([y1noisy,y2noisy])
+   y1 = x[0] + x[1] + 2 * x[2]
+   y2 = x[1] + 2 * x[2]
+   y3 = x[2]
+   return([y1,y2,y3])

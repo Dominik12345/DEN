@@ -33,6 +33,18 @@ str_variables = ''
 for i in range(0,len(variables)):
 	str_variables = ( str_variables + '\t\t' + list(variables.keys())[i] + ' = ' + 
 	str(list(variables.values())[i]) +'\n' )
+    
+# connections
+str_connections = ''
+for i in range(1,len(xi)+1):
+    str_connections =  ( str_connections + '\t\t' + 'p(1).n(1).xi' + str(i) + ' = CALCULATED' + '\n')
+
+for i in range(1,len(eta)+1):
+    str_connections =  ( str_connections + '\t\t' + 'p(1).n(1).eta' + str(i) + ' = CALCULATED' + '\n')
+    
+for i in range(1,len(theta)+1):
+    str_connections =  ( str_connections + '\t\t' + 'p(1).n(1).theta' + str(i) + ' = CALCULATED' + '\n')
+
 
 # parameters
 str_parameters = ''
@@ -96,6 +108,8 @@ write_equations = '\t\tminimize last * J\n' + '\t\tdJ = ' + str_objective+ '\n\n
 
 write_variables = '\t\tJ = 0\n\n\t\t!state variables\n' + str_variables + '\t\t!augmented states\n'+ str_xi + str_eta + '\t\t!observables\n' +  str_observables
 
+write_connections = str_connections
+
 # <--- Rewrite model as strings in APMonitor style
 
 # open .apm file
@@ -108,6 +122,8 @@ modelfile.write('\n\n')
 modelfile.write('\tParameters\n' + write_parameters + '\tEnd Parameters')
 modelfile.write('\n\n')
 modelfile.write('\tVariables\n' + write_variables + '\tEnd Variables')
+modelfile.write('\n\n')
+modelfile.write('\tConnections\n' + write_connections + '\tEnd Connections')
 modelfile.write('\n\n')
 modelfile.write('\tEquations\n'+ write_equations + '\tEnd Equations')
 modelfile.write('\n\nEnd Model')
