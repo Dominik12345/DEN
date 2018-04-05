@@ -22,6 +22,8 @@ def plot2d(data, variables ,filename):
     axisbottom_bool = True
     axisleft_bool = True
     
+    caption_bool = True
+    
     legend_outside = True
     
     colors = {}
@@ -70,13 +72,27 @@ def plot2d(data, variables ,filename):
     
     #check wether all rows have the same size and create df
     df = {} # initialize empty dictionary similar to dataframe
+    alpha1 = -1
+    alpha2 = -1
+    print(variables)
     for i in range(0,ncols):
         if not len(data[i]) == nrows:
             print('missing values in data set')
             return None
         else:
-            df[ variables[i] ] = data[i]
-    
+            if variables[i] == 'alpha1':
+                alpha1 = round(data[i][0],4)
+            elif variables[i] == 'alpha2':
+                alpha2 = round(data[i][0],4)
+            else:
+                df[ variables[i] ] = data[i]
+    if alpha1 != -1:
+        variables.remove('alpha1')
+        ncols = ncols-1
+    if alpha2 != -1:
+        variables.remove('alpha2')
+        ncols = ncols-1
+    print(variables)
     # <--- prepare data
     
     # ---> analyse data
@@ -127,6 +143,11 @@ def plot2d(data, variables ,filename):
         plt.yscale('log')
     if logscale_x:
         plt.xscale('log')
+        
+    # caption 
+    if caption_bool:
+        fig.text(0.5,1, 'alpha1 = ' + str(alpha1) + ' , alpha2 = ' + 
+                 str(alpha2), ha = 'center' )
     # grid
     plt.grid(grid_bool)
 
