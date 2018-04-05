@@ -146,7 +146,7 @@ def plot2d(data, variables ,filename):
         
     # caption 
     if caption_bool:
-        fig.text(0.5,1, 'alpha1 = ' + str(alpha1) + ' , alpha2 = ' + 
+        fig.text(0.45,0.85, 'alpha1 = ' + str(alpha1) + ' , alpha2 = ' + 
                  str(alpha2), ha = 'center' )
     # grid
     plt.grid(grid_bool)
